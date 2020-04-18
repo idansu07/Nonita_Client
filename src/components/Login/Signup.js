@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Form, Grid , Button, Segment, Header } from 'semantic-ui-react';
-import { signup } from '../api/user';
-import { stateSchema , validationSchema } from '../schemas/signupSchema';
-import { CustomDatePicker as DatePicker } from './DatePicker';
-import useForm from '../customHooks/useForm';
-import { CustomLoader as Loader } from './Loader';
-import history from '../history'
+import { signup } from '../../api/user';
+import { stateSchema , validationSchema } from '../../schemas/signupSchema';
+import { CustomDatePicker as DatePicker } from '../Common/DatePicker';
+import useForm from '../../customHooks/useForm';
+import { CustomLoader as Loader } from '.././Common/Loader';
+import history from '../../history'
 import { Link } from 'react-router-dom';
-import { setToken } from '../api/http';
+import { setToken } from '../../api/http';
 const Signup = () => {
 
     const [loaderVisible,setLoaderVisible] = useState(false)

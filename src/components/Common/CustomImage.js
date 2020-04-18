@@ -1,5 +1,5 @@
 import React from 'react';
-import { convertArrayBufferToBase64 } from '../utils/image';
+import { convertArrayBufferToBase64 } from '../../utils/image';
 import { Image } from 'semantic-ui-react';
 
 const DEFAULT_IMAGE = 'https://react.semantic-ui.com/images/wireframe/square-image.png'

@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useMemo } from 'react';
 import history from '../history';
 import { auth } from '../api/user';
 import { UserContext } from '../context';
@@ -6,11 +6,16 @@ import { SET_CURRENT_USER } from '../actionType';
 import Pages from './Pages';
 import { userReducer } from '../reducer';
 
+const initState = {
+    currentUser:null
+}
 
 const Main = props => {
-    const initState = { currentUser: {} }
+    
     const [state,dispatch] = useReducer(userReducer,initState)
     
+    const userContextValue = useMemo(() => ({ state,dispatch }) , [state,dispatch])
+
     useEffect(() => {
         async function authenticate(){
             const token = localStorage.getItem('token');
@@ -28,7 +33,7 @@ const Main = props => {
     },[])
 
     return( state.currentUser ?
-        <UserContext.Provider value={{ state , dispatch }}>
+        <UserContext.Provider value={userContextValue}>
             <Pages {...props} />
         </UserContext.Provider>
         : null

@@ -6,7 +6,7 @@ import { SET_CURRENT_USER } from '../actionType';
 import { Menu, Grid, Icon , Header, Modal } from 'semantic-ui-react';
 import PostForm from './PostForm';
 import { Link } from 'react-router-dom';
-import CustomImage from './CustomImage';
+import CustomImage from './Common/CustomImage';
 const HeaderMenu = () => {
 
     const {state,dispatch} = useContext(UserContext)

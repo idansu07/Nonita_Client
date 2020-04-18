@@ -5,7 +5,7 @@ import moment from 'moment';
 import { IMAGE_MODAL } from '../actionType';
 import { Context } from '../context';
 import { Link } from 'react-router-dom';
-import CustomImage from './CustomImage';
+import CustomImage from './Common/CustomImage';
 
 const Post = ({ feed , imageSize }) => {
     

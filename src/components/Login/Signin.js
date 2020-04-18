@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import useForm from '../customHooks/useForm';
-import { login } from '../api/user';
+import useForm from '../../customHooks/useForm';
+import { login } from '../../api/user';
 import { Form, Grid , Button, Segment, Header } from 'semantic-ui-react';
-import { stateSchema , validationSchema } from '../schemas/signinSchema';
-import { CustomLoader as Loader } from './Loader';
-import history from '../history';
+import { stateSchema , validationSchema } from '../../schemas/signinSchema';
+import { CustomLoader as Loader } from '.././Common/Loader';
+import history from '../../history';
 import { Link } from 'react-router-dom';
-import { setToken } from '../api/http';
+import { setToken } from '../../api/http';
 const SignIn = () => {
     
     const [loaderVisible,setLoaderVisible] = useState(false)

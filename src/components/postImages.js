@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
-import CustomImage from './CustomImage';
+import CustomImage from './Common/CustomImage';
 
 const PostImages = props => {
     const { images , removeImage } = props
