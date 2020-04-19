@@ -1,5 +1,5 @@
-import React , { Fragment, useContext } from 'react';
-import { Image, Divider, Icon , Feed, Button, Comment } from 'semantic-ui-react';
+import React , { Fragment, useContext, useState } from 'react';
+import { Image, Divider, Icon , Feed, Button, Comment, Form } from 'semantic-ui-react';
 import moment from 'moment';
 import { IMAGE_MODAL } from '../actionType';
 import { Context , UserContext } from '../context';
@@ -7,12 +7,15 @@ import { Link } from 'react-router-dom';
 import CustomImage from './Common/CustomImage';
 import { likePost } from '../api/post';
 import { SET_POSTS , POST_MODAL } from '../actionType';
+import { createComment } from '../api/comment';
+import FeedComment from './FeedComment';
 
 const Post = ({ feed , imageSize }) => {
     const userContext = useContext(UserContext)
     const currentUser = userContext.state.currentUser
-
-    const { dispatch } = useContext(Context)
+    const { state , dispatch } = useContext(Context)
+    const { posts } = state
+    const [comment,setComment] = useState('')
 
     const handleLikeClick = async () => {
         try {
@@ -59,6 +62,23 @@ const Post = ({ feed , imageSize }) => {
         )
     }
 
+    const  handleAddComment = async () => {
+        if(!comment) return
+        try {
+            const response = await createComment({ postId:feed._id , text:comment })
+            let newComment = response.data
+            newComment.owner = currentUser
+            
+            const currentPost = posts.find(post => (post._id === feed._id))
+            currentPost.comments = [newComment,...currentPost.comments]
+            setComment('')
+            dispatch({ type: SET_POSTS , payload:currentPost })
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
         <Fragment>
             <Feed.Event>
@@ -87,7 +107,7 @@ const Post = ({ feed , imageSize }) => {
                     </Image.Group>
                     <Feed.Meta>
                     {renderLike()}
-                    <Comment.Action>Comments</Comment.Action>
+                    <Comment.Action> {feed.comments.length ? feed.comments.length : ''} Comments </Comment.Action>
                     {
                         currentUser && currentUser._id === feed.owner._id ?
                         <Button onClick={() => dispatch({ type:POST_MODAL , payload:{ active:true, post:feed} })} icon>
@@ -95,6 +115,15 @@ const Post = ({ feed , imageSize }) => {
                         </Button> : null
                     }
                     </Feed.Meta>
+                    <Comment.Group>
+                        {
+                            feed.comments.map(comment => ( <FeedComment key={comment._id} comment={comment}  /> ))
+                        }
+                        <Form className="ui form" style={{marginTop: 'inherit'}}>
+                            <Form.TextArea rows="2" value={comment} onChange={(event) => { setComment(event.target.value) }}/>
+                            <Button onClick={handleAddComment} content='Add Reply' labelPosition='left' icon='edit' primary />
+                        </Form>
+                    </Comment.Group>
                 </Feed.Content>
             </Feed.Event>
             <Divider></Divider>
