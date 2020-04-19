@@ -1,10 +1,9 @@
 import React, { useContext, useState, Fragment } from 'react'
 import { logout } from '../api/user';
 import history from '../history';
-import { UserContext } from '../context';
-import { SET_CURRENT_USER } from '../actionType';
-import { Menu, Grid, Icon , Header, Modal } from 'semantic-ui-react';
-import PostForm from './PostForm';
+import { Context,UserContext } from '../context';
+import { SET_CURRENT_USER , POST_MODAL } from '../actionType';
+import { Menu, Grid, Icon , Header } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import CustomImage from './Common/CustomImage';
 const HeaderMenu = () => {
@@ -12,16 +11,13 @@ const HeaderMenu = () => {
     const {state,dispatch} = useContext(UserContext)
     const {currentUser} = state
     const [activeTab,setActiveTab] = useState('home')
-    const [modelMode,setModelMode] = useState(false)
+    const appContext = useContext(Context)
+    const dispatchContext = appContext.dispatch
 
 
     const handleTabClick = (e, { name }) => {
         setActiveTab(name)
     }    
-
-    const handleAddPost = () => {
-        setModelMode(true)
-    }
 
     const handleLogout = async () =>{
         try {
@@ -65,7 +61,7 @@ const HeaderMenu = () => {
                             <Menu.Item
                                 position="left"
                                 name='create'
-                                onClick={handleAddPost}
+                                onClick={() => { dispatchContext({ type:POST_MODAL,payload:{active:true} }) }}
                                 icon="plus">
                             </Menu.Item>
                             <Link 
@@ -87,9 +83,6 @@ const HeaderMenu = () => {
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
-            <Modal size="tiny" open={modelMode} onClose={() => { setModelMode(false) }}>
-                <PostForm closeModal={() => { setModelMode(false)}}/>
-            </Modal>
         </Fragment> : null
     )
 }

@@ -1,4 +1,4 @@
-import { SET_CURRENT_USER , SET_POSTS , SET_LOADER , LOAD_POSTS , IMAGE_MODAL } from './actionType';
+import { SET_CURRENT_USER , SET_POSTS , SET_LOADER , LOAD_POSTS , IMAGE_MODAL , POST_MODAL } from './actionType';
 export const reducer = (state = {},action) => {
     switch (action.type) {
         case SET_CURRENT_USER:
@@ -7,18 +7,21 @@ export const reducer = (state = {},action) => {
             return { ...state , posts:action.payload , loader:false}
         case SET_POSTS:
             let postExists = state.posts.find(post => post._id === action.payload._id)
-            //let posts = null
             if(!postExists){
-                return {...state, posts: [action.payload , ...state.posts ] , loader:false}
+                return {...state, posts: [action.payload , ...state.posts ] , loader:false , postModal:{ active:false }}
             }
             else{
-                postExists = action.payload
-                return {...state , posts:[...state.posts] , loader:false}
+                Object.keys(postExists).forEach(key => {
+                    postExists[key] = action.payload[key]
+                })
+                return {...state , posts:[...state.posts] , loader:false , postModal:{ active:false }}
             }
         case SET_LOADER:
             return {...state , loader: action.payload}
         case IMAGE_MODAL:
             return {...state , imageModal: action.payload}
+        case POST_MODAL:
+            return {...state , postModal:action.payload}
         default:
             return state
     }

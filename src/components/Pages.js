@@ -4,15 +4,16 @@ import Header from './header';
 import { Context } from '../context';
 import Home from './Home';
 import { getPosts } from '../api/post';
-import { LOAD_POSTS } from '../actionType';
-import { Grid, Loader } from 'semantic-ui-react';
+import { LOAD_POSTS , POST_MODAL } from '../actionType';
+import { Grid, Loader , Modal } from 'semantic-ui-react';
 import Chat from './Chat';
 import Profile from './Profile';
 import ImageModal from './ImageModal';
+import PostForm from './PostForm';
 
 const Pages = props => {
     
-    const initAppState = { loader:false , openPostModel:false , posts:[] , imageModal:{ active:false }}
+    const initAppState = { loader:false , openPostModel:false , posts:[] , imageModal:{ active:false } , postModal:false}
     const [state, dispatch] = useReducer(reducer,initAppState)
 
     const { page } = props
@@ -63,6 +64,9 @@ const Pages = props => {
                 </Grid.Column>
                 <Loader active={state.loader} style={{ position:"fixed" , top:"50%"  , left:"50%"}} inline='centered'/>
                 <ImageModal arrayBuffer={state.imageModal.image} active={state.imageModal.active} />
+                <Modal size="tiny" open={state.postModal.active} onClose={() => { dispatch({ type: POST_MODAL, payload:{ active:false } }) }}>
+                    <PostForm/>
+                </Modal>
             </Grid>
         </Context.Provider>
     )

@@ -1,15 +1,17 @@
 import React , { Fragment, useContext } from 'react';
-import { Image, Divider, Icon , Feed } from 'semantic-ui-react';
+import { Image, Divider, Icon , Feed, Button, Comment } from 'semantic-ui-react';
 import moment from 'moment';
 import { IMAGE_MODAL } from '../actionType';
-import { Context } from '../context';
+import { Context , UserContext } from '../context';
 import { Link } from 'react-router-dom';
 import CustomImage from './Common/CustomImage';
 import { likePost } from '../api/post';
-import { SET_POSTS } from '../actionType';
+import { SET_POSTS , POST_MODAL } from '../actionType';
 
 const Post = ({ feed , imageSize }) => {
-    
+    const userContext = useContext(UserContext)
+    const currentUser = userContext.state.currentUser
+
     const { dispatch } = useContext(Context)
 
     const handleLikeClick = async () => {
@@ -46,11 +48,24 @@ const Post = ({ feed , imageSize }) => {
         )
     }
 
+    const renderLike = () => {
+
+        const userAlreadyLiked = feed.likes.find(like => (like.owner === currentUser._id ))
+        
+        return(
+            <Feed.Like onClick={handleLikeClick}>
+                <Icon name='like' style={ userAlreadyLiked ? {color:'red'} : null }/>{ feed.likes.length } Like
+            </Feed.Like>
+        )
+    }
+
     return (
         <Fragment>
             <Feed.Event>
                 <Feed.Label>
-                    <CustomImage arraybuffer={feed.owner.avatar ? feed.owner.avatar.data : null} />
+                    <Link to={`/profile/${feed.owner._id}`}>
+                        <CustomImage arraybuffer={feed.owner.avatar ? feed.owner.avatar.data : null} />
+                    </Link>
                 </Feed.Label>
                 <Feed.Content>
                     <Feed.Summary>
@@ -71,9 +86,14 @@ const Post = ({ feed , imageSize }) => {
                     }   
                     </Image.Group>
                     <Feed.Meta>
-                    <Feed.Like onClick={handleLikeClick}>
-                        <Icon name='like' />{ feed.likes.length } Like
-                    </Feed.Like>
+                    {renderLike()}
+                    <Comment.Action>Comments</Comment.Action>
+                    {
+                        currentUser && currentUser._id === feed.owner._id ?
+                        <Button onClick={() => dispatch({ type:POST_MODAL , payload:{ active:true, post:feed} })} icon>
+                            <Icon name='pencil' />
+                        </Button> : null
+                    }
                     </Feed.Meta>
                 </Feed.Content>
             </Feed.Event>
