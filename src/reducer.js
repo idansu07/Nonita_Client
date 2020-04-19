@@ -6,10 +6,15 @@ export const reducer = (state = {},action) => {
         case LOAD_POSTS:
             return { ...state , posts:action.payload , loader:false}
         case SET_POSTS:
-            const posts = [action.payload ,...state.posts ]
-            return {...state,posts , loader:false}
-        // case ACTIVE_TAB:
-        //     return {...state , activeTab: action.payload}
+            let postExists = state.posts.find(post => post._id === action.payload._id)
+            //let posts = null
+            if(!postExists){
+                return {...state, posts: [action.payload , ...state.posts ] , loader:false}
+            }
+            else{
+                postExists = action.payload
+                return {...state , posts:[...state.posts] , loader:false}
+            }
         case SET_LOADER:
             return {...state , loader: action.payload}
         case IMAGE_MODAL:

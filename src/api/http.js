@@ -49,3 +49,11 @@ export const PATCH = async (url,params) => {
         throw error.response
     }
 }
+
+export const DELETE = async (url,params) => {
+    try {
+        
+    } catch (error) {
+        
+    }
+}

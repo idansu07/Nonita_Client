@@ -1,15 +1,28 @@
 import React , { Fragment, useContext } from 'react';
 import { Image, Divider, Icon , Feed } from 'semantic-ui-react';
-import {  } from '../utils/image';
 import moment from 'moment';
 import { IMAGE_MODAL } from '../actionType';
 import { Context } from '../context';
 import { Link } from 'react-router-dom';
 import CustomImage from './Common/CustomImage';
+import { likePost } from '../api/post';
+import { SET_POSTS } from '../actionType';
 
 const Post = ({ feed , imageSize }) => {
     
     const { dispatch } = useContext(Context)
+
+    const handleLikeClick = async () => {
+        try {
+            const response = await likePost({ id:feed._id })
+            if(response.data){
+                feed.likes = [...response.data.likes]
+                dispatch({ type:SET_POSTS  , payload: feed})
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const handleImageClick = (image) => {
         dispatch({ type:IMAGE_MODAL, payload: { active:true,image: image }})
@@ -58,8 +71,8 @@ const Post = ({ feed , imageSize }) => {
                     }   
                     </Image.Group>
                     <Feed.Meta>
-                    <Feed.Like>
-                        <Icon name='like' />1 Like
+                    <Feed.Like onClick={handleLikeClick}>
+                        <Icon name='like' />{ feed.likes.length } Like
                     </Feed.Like>
                     </Feed.Meta>
                 </Feed.Content>
