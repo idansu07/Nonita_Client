@@ -1,6 +1,5 @@
 import { SET_CURRENT_USER , 
     SET_POSTS , 
-    SET_LOADER , 
     LOAD_POSTS , 
     IMAGE_MODAL , 
     POST_MODAL , 
@@ -10,25 +9,23 @@ from './actionType';
 export const reducer = (state = {},action) => {
     switch (action.type) {
         case SET_CURRENT_USER:
-            return {...state, currentUser:action.payload , loader:false}
+            return {...state, currentUser:action.payload }
         case LOAD_POSTS:
-            return { ...state , posts:action.payload , loader:false}
+            return { ...state , posts:action.payload}
         case SET_POSTS:
             let postExists = state.posts.find(post => post._id === action.payload._id)
             if(!postExists){
-                return {...state, posts: [action.payload , ...state.posts ] , loader:false , postModal:{ active:false }}
+                return {...state, posts: [action.payload , ...state.posts ] ,  postModal:{ active:false }}
             }
             else{
                 Object.keys(postExists).forEach(key => {
                     postExists[key] = action.payload[key]
                 })
-                return {...state , posts:[...state.posts] , loader:false , postModal:{ active:false }}
+                return {...state , posts:[...state.posts] , postModal:{ active:false }}
             }
         case DELETE_POST:
             const postsFilterd = state.posts.filter(post => (post._id !== action.payload))
             return {...state, posts: [...postsFilterd]}
-        case SET_LOADER:
-            return {...state , loader: action.payload}
         case IMAGE_MODAL:
             return {...state , imageModal: action.payload}
         case POST_MODAL:

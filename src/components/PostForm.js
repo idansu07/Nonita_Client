@@ -26,7 +26,9 @@ const PostForm = () => {
             let postSaved = null
             if(post){
                 const response = await updatePost(post._id,item)
-                postSaved = response.data
+                postSaved = {...post}
+                postSaved.content = response.data.content
+                postSaved.images = response.data.images
             }
             else{
                 const response = await createPost(item)

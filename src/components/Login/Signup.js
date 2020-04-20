@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Grid , Button, Segment, Header } from 'semantic-ui-react';
+import { Form, Grid , Button, Segment, Header, Message } from 'semantic-ui-react';
 import { signup } from '../../api/user';
 import { stateSchema , validationSchema } from '../../schemas/signupSchema';
 import { CustomDatePicker as DatePicker } from '../Common/DatePicker';
@@ -11,6 +11,7 @@ import { setToken } from '../../api/http';
 const Signup = () => {
 
     const [loaderVisible,setLoaderVisible] = useState(false)
+    const [error,setError] = useState(null)
 
     const signUp = async () => {
         const userForm = { 
@@ -30,8 +31,14 @@ const Signup = () => {
             setLoaderVisible(false)
             history.push('/')
         } catch (error) {
-            console.log(error)
-            setLoaderVisible(false)
+            if(!error) {
+                setLoaderVisible(false)
+                setError('Internal server error , Please try again later')
+            }
+            else{
+                setLoaderVisible(false)
+                setError(error.data)
+            }
         }
     }
 
@@ -44,7 +51,7 @@ const Signup = () => {
                     <Grid.Column style={{maxWidth: "450px"}}>
                     <Header textAlign='center' as='h2'>Sign-up</Header>
                         <Segment>
-                            <Form onSubmit={handleSubmit}>
+                            <Form error onSubmit={handleSubmit}>
                                 <Form.Group widths="2">
                                     <Form.Field>
                                         <Form.Input
@@ -84,6 +91,10 @@ const Signup = () => {
                                     </Form.Field>
                                 </Form.Group>
                                 <Button disabled={disable} primary type='submit'>Submit</Button>
+                                <Message
+                                    error
+                                    header={error}
+                                />
                             </Form>
                         </Segment>
                         <Segment>

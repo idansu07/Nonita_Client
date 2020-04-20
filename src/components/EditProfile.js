@@ -5,7 +5,7 @@ import { Form, Button, Segment, Header } from 'semantic-ui-react';
 import { CustomDatePicker as DatePicker } from '././Common/DatePicker';
 import { stateSchema , validationSchema } from '../schemas/signupSchema';
 import moment from 'moment';
-import { SET_CURRENT_USER , SET_LOADER } from '../actionType';
+import { SET_CURRENT_USER  } from '../actionType';
 import CustomImage from './Common/CustomImage';
 import _ from 'lodash';
 
@@ -43,7 +43,6 @@ const EditProfile = () => {
             dispatch({ type:SET_CURRENT_USER , payload:response.data })
         } catch (error) {
             console.log(error)
-            dispatch({ type:SET_LOADER,payload:false })
         }
     }
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import useForm from '../../customHooks/useForm';
 import { login } from '../../api/user';
-import { Form, Grid , Button, Segment, Header } from 'semantic-ui-react';
+import { Form, Grid , Button, Segment, Header, Message } from 'semantic-ui-react';
 import { stateSchema , validationSchema } from '../../schemas/signinSchema';
 import { CustomLoader as Loader } from '.././Common/Loader';
 import history from '../../history';
@@ -10,6 +10,7 @@ import { setToken } from '../../api/http';
 const SignIn = () => {
     
     const [loaderVisible,setLoaderVisible] = useState(false)
+    const [error,setError] = useState(null)
 
     const signin = async () => {
         const formData = { email: inputs.email.value , password: inputs.password.value }
@@ -21,8 +22,14 @@ const SignIn = () => {
             setToken()
             history.push('/')
         } catch (error) {
-            console.log(error)
-            setLoaderVisible(false)
+            if(!error) {
+                setLoaderVisible(false)
+                setError('Internal server error , Please try again later')
+            }
+            else{
+                setLoaderVisible(false)
+                setError('The e-mail address or password you entered was incorrect') 
+            }
         }
     }
 
@@ -35,7 +42,7 @@ const SignIn = () => {
                     <Grid.Column style={{maxWidth: "450px"}}>
                     <Header textAlign='center' as='h2'>Log-in to your account</Header>
                         <Segment>
-                            <Form onSubmit={handleSubmit}>
+                            <Form error onSubmit={handleSubmit}>
                                 <Form.Field>
                                     <Form.Input
                                         error={inputs['email'].error ? inputs['email'].error : undefined}
@@ -59,6 +66,10 @@ const SignIn = () => {
                                     />
                                 </Form.Field>
                                 <Button disabled={disable} primary fluid type='submit'>Login</Button>
+                                <Message
+                                    error
+                                    header={error}
+                                />
                             </Form>
                         </Segment>
                         <Segment>
