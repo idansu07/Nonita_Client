@@ -24,6 +24,7 @@ const FeedComment = ({ comment , onSubmit , handleDeleteComment }) => {
 
     const handleReplayComment = () => {
         setReplayComment(false)
+        
     }
 
     return(
@@ -50,14 +51,14 @@ const FeedComment = ({ comment , onSubmit , handleDeleteComment }) => {
                             <Icon name="pencil" onClick={() => setEditComment(true)} />
                         </Comment.Action>
                         <Comment.Action onClick={() => {setReplayComment(true)}} >Replay</Comment.Action>
+                        <Comment.Action>
+                            <Icon name="trash" onClick={() => handleDeleteComment(comment._id)} />
+                        </Comment.Action>
                         {
                             replayComment 
                             ? <EditComment closeButton={() => setReplayComment(false)} value={''} handleSubmit={handleReplayComment} />
                             : null
                         }
-                        <Comment.Action>
-                            <Icon name="trash" onClick={() => handleDeleteComment(comment._id)} />
-                        </Comment.Action>
                     </Comment.Actions>
                 }
             </Comment.Content>
