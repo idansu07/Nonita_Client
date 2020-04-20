@@ -1,11 +1,13 @@
-import React from 'react';
-import { Comment } from 'semantic-ui-react';
+import React, { useState } from 'react';
+import { Comment, Icon } from 'semantic-ui-react';
 import CustomImage from './Common/CustomImage';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
-const FeedComment = props => {
+import EditComment from './EditComment';
+const FeedComment = ({ comment , onSubmit , handleDeleteComment }) => { 
 
-    const comment = props.comment
+    const [editComment,setEditComment] = useState(false)
+    const [replayComment,setReplayComment] = useState(false)
 
     const renderDateComment = (renderDateComment) => {
         const diffInDays = moment().diff(moment(renderDateComment),'days')
@@ -14,20 +16,50 @@ const FeedComment = props => {
         return `${diffInDays} days ago`
     }
 
+    
+    const handleUpdateComment = (text) => {
+        setEditComment(false)
+        onSubmit(text,comment._id)
+    }
+
+    const handleReplayComment = () => {
+        setReplayComment(false)
+    }
+
     return(
         <Comment>
             <Link to={`/profile/${comment.owner._id}`} className="avatar">
                 <CustomImage arraybuffer={comment.owner.avatar.data} />
             </Link>
             <Comment.Content>
-                <Comment.Author as='a'>{ comment.owner.userName }</Comment.Author>
+                <Link to={`/profile/${comment.owner._id}`} className="author">
+                    { comment.owner.userName }
+                </Link>
                 <Comment.Metadata>
-                <span>{renderDateComment(comment.createdAt)}</span>
+                    <span>{renderDateComment(comment.createdAt)}</span>
                 </Comment.Metadata>
-                <Comment.Text>{comment.text}</Comment.Text>
-                <Comment.Actions>
-                <Comment.Action>Replay</Comment.Action>
-                </Comment.Actions>
+                {
+                    editComment 
+                    ? <EditComment closeButton={() => setEditComment(false)} value={comment.text} handleSubmit={handleUpdateComment} />
+                    : <Comment.Text>{comment.text}</Comment.Text>
+                }
+                
+                {!editComment &&
+                    <Comment.Actions>
+                        <Comment.Action>
+                            <Icon name="pencil" onClick={() => setEditComment(true)} />
+                        </Comment.Action>
+                        <Comment.Action onClick={() => {setReplayComment(true)}} >Replay</Comment.Action>
+                        {
+                            replayComment 
+                            ? <EditComment closeButton={() => setReplayComment(false)} value={''} handleSubmit={handleReplayComment} />
+                            : null
+                        }
+                        <Comment.Action>
+                            <Icon name="trash" onClick={() => handleDeleteComment(comment._id)} />
+                        </Comment.Action>
+                    </Comment.Actions>
+                }
             </Comment.Content>
         </Comment>
     )

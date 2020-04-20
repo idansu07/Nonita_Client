@@ -1,4 +1,4 @@
-import { GET , POST, PATCH } from './http';
+import { GET , POST, PATCH, DELETE } from './http';
 export const getPosts = (params) => {
     return GET('posts',params)
 }
@@ -10,4 +10,7 @@ export const likePost = (params) => {
 }
 export const updatePost = (id,params) => {
     return PATCH(`posts/${id}`,params)
+}
+export const deletePost = (id) => {
+    return DELETE(`posts/${id}`)
 }

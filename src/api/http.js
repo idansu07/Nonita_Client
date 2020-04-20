@@ -50,10 +50,11 @@ export const PATCH = async (url,params) => {
     }
 }
 
-export const DELETE = async (url,params) => {
+export const DELETE = async (url) => {
     try {
-        
+        const response = await axiosInstance.delete(url)
+        return response
     } catch (error) {
-        
+        throw error.response
     }
 }

@@ -1,4 +1,12 @@
-import { SET_CURRENT_USER , SET_POSTS , SET_LOADER , LOAD_POSTS , IMAGE_MODAL , POST_MODAL } from './actionType';
+import { SET_CURRENT_USER , 
+    SET_POSTS , 
+    SET_LOADER , 
+    LOAD_POSTS , 
+    IMAGE_MODAL , 
+    POST_MODAL , 
+    DELETE_POST} 
+from './actionType';
+
 export const reducer = (state = {},action) => {
     switch (action.type) {
         case SET_CURRENT_USER:
@@ -16,6 +24,9 @@ export const reducer = (state = {},action) => {
                 })
                 return {...state , posts:[...state.posts] , loader:false , postModal:{ active:false }}
             }
+        case DELETE_POST:
+            const postsFilterd = state.posts.filter(post => (post._id !== action.payload))
+            return {...state, posts: [...postsFilterd]}
         case SET_LOADER:
             return {...state , loader: action.payload}
         case IMAGE_MODAL:

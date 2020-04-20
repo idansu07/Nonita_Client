@@ -1,21 +1,23 @@
 import React , { Fragment, useContext, useState } from 'react';
-import { Image, Divider, Icon , Feed, Button, Comment, Form } from 'semantic-ui-react';
+import { Image, Divider, Icon , Feed, Button, Comment, Modal } from 'semantic-ui-react';
 import moment from 'moment';
 import { IMAGE_MODAL } from '../actionType';
 import { Context , UserContext } from '../context';
 import { Link } from 'react-router-dom';
 import CustomImage from './Common/CustomImage';
 import { likePost } from '../api/post';
-import { SET_POSTS , POST_MODAL } from '../actionType';
-import { createComment } from '../api/comment';
+import { SET_POSTS , POST_MODAL , DELETE_POST } from '../actionType';
+import { createComment , updateComment , deleteComment } from '../api/comment';
 import FeedComment from './FeedComment';
+import { deletePost } from '../api/post';
+import EditComment from './EditComment';
 
 const Post = ({ feed , imageSize }) => {
     const userContext = useContext(UserContext)
     const currentUser = userContext.state.currentUser
     const { state , dispatch } = useContext(Context)
     const { posts } = state
-    const [comment,setComment] = useState('')
+    const [modalOpen,setModalOpen] = useState(false)
 
     const handleLikeClick = async () => {
         try {
@@ -62,18 +64,49 @@ const Post = ({ feed , imageSize }) => {
         )
     }
 
-    const  handleAddComment = async () => {
-        if(!comment) return
+    const  handleUpsertComment = async (text ,id) => {
+        const currentPost = posts.find(post => (post._id === feed._id))
+        if(!text) return
         try {
-            const response = await createComment({ postId:feed._id , text:comment })
-            let newComment = response.data
-            newComment.owner = currentUser
-            
-            const currentPost = posts.find(post => (post._id === feed._id))
-            currentPost.comments = [newComment,...currentPost.comments]
-            setComment('')
+            let comment
+            if(!id){
+                const response = await createComment({ postId:feed._id , text })
+                comment = response.data
+                comment.owner = currentUser
+                currentPost.comments = [...currentPost.comments,comment]
+            }
+            else{
+                const response = await updateComment(id,{text})
+                comment = response.data
+                const currentComment = currentPost.comments.find(c => (c._id === id))
+                Object.keys(currentComment).forEach(key => currentComment[key] = comment[key])
+            }
             dispatch({ type: SET_POSTS , payload:currentPost })
 
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleDeleteComment = async (id) => {
+        try {
+            const comment = await deleteComment(id)
+            const currentPost = posts.find(post => (post._id === feed._id))
+            if(comment.data){
+                currentPost.comments = currentPost.comments.filter(c => c._id !== id)
+            }
+            dispatch({ type: SET_POSTS , payload:currentPost })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleDeletePost = async () => {
+        try {
+            const response = await deletePost(feed._id)
+            if(response.data){
+                dispatch({ type:DELETE_POST , payload: feed._id })
+            }
         } catch (error) {
             console.log(error)
         }
@@ -110,23 +143,45 @@ const Post = ({ feed , imageSize }) => {
                     <Comment.Action> {feed.comments.length ? feed.comments.length : ''} Comments </Comment.Action>
                     {
                         currentUser && currentUser._id === feed.owner._id ?
-                        <Button onClick={() => dispatch({ type:POST_MODAL , payload:{ active:true, post:feed} })} icon>
-                            <Icon name='pencil' />
-                        </Button> : null
+                        <Fragment>
+                            <Button onClick={() => dispatch({ type:POST_MODAL , payload:{ active:true, post:feed} })} icon>
+                                <Icon name='pencil' />
+                            </Button> 
+                        
+                            <Button onClick={() => setModalOpen(true)} icon>
+                                <Icon name='trash' />
+                            </Button>
+                        </Fragment>
+                        : null
                     }
                     </Feed.Meta>
                     <Comment.Group>
                         {
-                            feed.comments.map(comment => ( <FeedComment key={comment._id} comment={comment}  /> ))
+                            feed.comments.map(comment => ( <FeedComment handleDeleteComment={handleDeleteComment} onSubmit={handleUpsertComment} key={comment._id} comment={comment}  /> ))
                         }
-                        <Form className="ui form" style={{marginTop: 'inherit'}}>
-                            <Form.TextArea rows="2" value={comment} onChange={(event) => { setComment(event.target.value) }}/>
-                            <Button onClick={handleAddComment} content='Add Reply' labelPosition='left' icon='edit' primary />
-                        </Form>
+                        <EditComment value='' handleSubmit={handleUpsertComment} />
                     </Comment.Group>
                 </Feed.Content>
             </Feed.Event>
             <Divider></Divider>
+            <Modal open={modalOpen} onClose={() => setModalOpen(false)} size={"tiny"}>
+                <Modal.Header>Delete Your Post</Modal.Header>
+                <Modal.Content>
+                    <p>Are you sure you want to delete your post</p>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button onClick={() => setModalOpen(false)} negative>
+                        No
+                    </Button>
+                    <Button
+                        onClick={handleDeletePost}
+                        positive
+                        labelPosition='right'
+                        icon='checkmark'
+                        content='Yes'
+                    />
+                </Modal.Actions>
+            </Modal>    
         </Fragment>
     )
 }
