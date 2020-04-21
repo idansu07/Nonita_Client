@@ -6,6 +6,8 @@ import { SET_CURRENT_USER , POST_MODAL } from '../actionType';
 import { Menu, Grid, Icon , Header } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import CustomImage from './Common/CustomImage';
+import SearchBar from './SearchBar';
+import { getUsers } from '../api/user';
 const HeaderMenu = () => {
 
     const {state,dispatch} = useContext(UserContext)
@@ -30,6 +32,7 @@ const HeaderMenu = () => {
             console.log(error)
         }
     }
+
 
     return(
         currentUser ?  
@@ -64,6 +67,7 @@ const HeaderMenu = () => {
                                 onClick={() => { dispatchContext({ type:POST_MODAL,payload:{active:true} }) }}
                                 icon="plus">
                             </Menu.Item>
+                            <Menu.Item><SearchBar api={getUsers} /></Menu.Item>
                             <Link 
                                 to={`/profile/${currentUser._id}`}
                                 style={{position:'right'}}

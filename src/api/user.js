@@ -21,3 +21,9 @@ export const editUser = (params) => {
 export const uploadAvatar = (params) => {
     return POST('users/me/avatar' , params)
 }
+export const setFriendRequest = (params) => {
+    return POST('users/setFriendRequest',params)
+}
+export const acceptedFriendRequest = (params) => {
+    return POST('users/acceptedFriendRequest' , params)
+}
