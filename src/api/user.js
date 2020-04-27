@@ -10,7 +10,7 @@ export const signup = (params) => {
     return POST('/users',params)
 }
 export const auth = () => {
-    return GET('/users/me')
+    return GET(`/users/me`)
 }
 export const logout = () => {
     return POST('/users/logout')

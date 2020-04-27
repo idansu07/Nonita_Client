@@ -20,7 +20,8 @@ const Signup = () => {
             userName:inputs.userName.value,
             email:inputs.email.value,
             password:inputs.password.value,
-            birthday:inputs.birthday.value
+            birthday:inputs.birthday.value,
+            online:false
         }
         
         try {

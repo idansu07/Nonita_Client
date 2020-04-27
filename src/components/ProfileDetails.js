@@ -1,37 +1,25 @@
-import React, { useState, useEffect, Fragment, useContext } from 'react';
-import { getUsers , setFriendRequest } from '../api/user';
+import React, { Fragment, useContext } from 'react';
+import {  setFriendRequest } from '../api/user';
 import { Card, Button } from 'semantic-ui-react';
 import CustomImage from './Common/CustomImage';
 import moment from 'moment';
 import { UserContext } from '../context';
-
-const ProfileDetails = ({profileId}) => {
+//import socket from '../socket';
+const ProfileDetails = ({profile}) => {
     
     const {state} = useContext(UserContext)
-    const [profile,setProfile] = useState()
-
-    useEffect(() => {
-        async function getProfile() {
-            try {
-                const response = await getUsers({ id:profileId })
-                setProfile(response.data[0])
-            } catch (error) {
-                console.log(error)
-            }
-        }
-        getProfile()
-    },[profileId])
-
+    
     const renderButton = () => {
         const friendsList = state.currentUser.friendsList
-        const userIsFriend = friendsList.find(f => (f._id === profileId))
+        const userIsFriend = friendsList.find(f => (f._id === profile._id))
         if(userIsFriend) return <span>You and {profile.firstName} already friends</span>
             return <Button onClick={handleFriendRequestClick} primary content="Send Friend Request"/>
     }
 
+    
     const handleFriendRequestClick = async () => {
-        try {
-            const response = await setFriendRequest({ friendId:profileId })
+        try {            
+            const response = await setFriendRequest({ friendId:profile._id , socketId:localStorage.getItem('socketId') })
             console.log(response)
         } catch (error) {
             console.log(error)
@@ -39,11 +27,10 @@ const ProfileDetails = ({profileId}) => {
     }
     
     return(
-        profile ?
         <Fragment>
             {renderButton()}
             <Card>
-                <CustomImage arraybuffer={profile.avatar.data} wrapped ui={false} />
+                <CustomImage arraybuffer={profile.avatar ? profile.avatar.data : null} wrapped ui={false} />
                 <Card.Content>
                     <Card.Header>{profile.firstName} {profile.lastName}</Card.Header>
                     <Card.Meta>
@@ -57,8 +44,6 @@ const ProfileDetails = ({profileId}) => {
                 </Card.Content>
             </Card>
         </Fragment>
-        
-        : null
     )
 }
 

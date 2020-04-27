@@ -4,8 +4,15 @@ import Main from './Main';
 import Signin from './Login/Signin';
 import Signup from './Login/Signup';
 import history from '../history';
+//import socket from '../socket';
 
 const App = () => {
+
+    // socket.on('setSocketId' , id => {
+    //     console.log(id)
+    //     localStorage.setItem('socketId' , id)
+    // })
+
     return(
         <div>
             <Router history={history}>

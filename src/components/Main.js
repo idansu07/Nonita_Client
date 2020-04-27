@@ -5,6 +5,7 @@ import { UserContext } from '../context';
 import { SET_CURRENT_USER } from '../actionType';
 import Pages from './Pages';
 import { userReducer } from '../reducer';
+import socket from '../socket';
 
 const initState = {
     currentUser:null
@@ -13,9 +14,9 @@ const initState = {
 const Main = props => {
     
     const [state,dispatch] = useReducer(userReducer,initState)
-    
     const userContextValue = useMemo(() => ({ state,dispatch }) , [state,dispatch])
-
+    
+    
     useEffect(() => {
         async function authenticate(){
             const token = localStorage.getItem('token');
@@ -23,6 +24,7 @@ const Main = props => {
             try {
                 const response = await auth()
                 if(!response.data._id) history.push('/signin')
+                socket.emit('connection' , { client : response.data})
                 dispatch({ type: SET_CURRENT_USER , payload: response.data })
             } catch (error) {
                 console.log(error)
